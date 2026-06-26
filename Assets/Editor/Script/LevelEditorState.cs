@@ -11,6 +11,7 @@ public class LevelEditorState
     public GridSettings GridSettings { get; set; }
     public List<TileData> SelectedTiles { get; set; }
     public PreviewSettings PreviewSettings { get; set; }
+    public TileType SelectedTileType { get; set; }
 
     private const string STATE_KEY = "LevelEditorState_";
 
@@ -50,6 +51,12 @@ public class LevelEditorState
         if (!string.IsNullOrEmpty(previewJson))
         {
             PreviewSettings = JsonUtility.FromJson<PreviewSettings>(previewJson);
+        }
+
+        if (CurrentLevel != null && (GridSettings.Width != CurrentLevel.GridSize.x || GridSettings.Height != CurrentLevel.GridSize.y))
+        {
+            GridSettings.Width = CurrentLevel.GridSize.x;
+            GridSettings.Height = CurrentLevel.GridSize.y;
         }
     }
 

@@ -25,7 +25,12 @@ public class LevelDataManager
     private void CreateLevel(string name, int width, int height)
     {
         editorState.CurrentLevel = new LevelData(name, 1, new Vector2Int(width, height));
+        editorState.GridSettings.Width = width;
+        editorState.GridSettings.Height = height;
         editorState.SaveState();
+
+        new GridEditor(editorState).CreateGridInScene();
+
         EditorUtility.DisplayDialog("Success", $"Created new level: {name}", "OK");
     }
 

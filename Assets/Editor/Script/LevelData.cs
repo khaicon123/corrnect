@@ -39,7 +39,7 @@ public class LevelData
         {
             for (int x = 0; x < size.x; x++)
             {
-                Tiles.Add(new TileData(x, y));
+                Tiles.Add(new TileData(x, y, true));
             }
         }
     }
@@ -79,26 +79,41 @@ public class TileData
     public string TileName;
     public bool IsWalkable;
     public bool HasCollider;
+    public Color TileColor;
     public Dictionary<string, string> CustomProperties;
 
     public TileData()
     {
-        TileTypeId = 0;
+        TileTypeId = -1;
         TileName = "Empty";
         IsWalkable = true;
         HasCollider = false;
+        TileColor = Color.white;
         CustomProperties = new Dictionary<string, string>();
     }
 
-    public TileData(int x, int y)
+    public TileData(int x, int y, bool useFloorDefaults = false)
     {
         X = x;
         Y = y;
-        TileTypeId = 0;
-        TileName = "Empty";
-        IsWalkable = true;
-        HasCollider = false;
         CustomProperties = new Dictionary<string, string>();
+
+        if (useFloorDefaults)
+        {
+            TileTypeId = 1;
+            TileName = "Floor";
+            IsWalkable = true;
+            HasCollider = false;
+            TileColor = Color.yellow;
+        }
+        else
+        {
+            TileTypeId = 0;
+            TileName = "Empty";
+            IsWalkable = true;
+            HasCollider = false;
+            TileColor = Color.white;
+        }
     }
 }
 

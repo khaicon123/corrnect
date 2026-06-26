@@ -16,6 +16,12 @@ public class TilePaletteEditor
     {
         editorState = state;
         LoadTilePalette();
+
+        if (selectedTileTypeId < 0 && tileTypes.Count > 0)
+        {
+            selectedTileTypeId = tileTypes.Find(t => t.Name == "Floor")?.Id ?? tileTypes[0].Id;
+            editorState.SelectedTileType = tileTypes.Find(t => t.Id == selectedTileTypeId);
+        }
     }
 
     public void DrawGUI()
@@ -64,6 +70,7 @@ public class TilePaletteEditor
         if (GUILayout.Button(buttonLabel, GUILayout.Height(50)))
         {
             selectedTileTypeId = tileType.Id;
+            editorState.SelectedTileType = tileType;
         }
 
         GUI.backgroundColor = Color.white;
@@ -125,6 +132,7 @@ public class TilePaletteEditor
 
         tileTypes.Add(newTile);
         selectedTileTypeId = newId;
+        editorState.SelectedTileType = newTile;
     }
 
     private void LoadTilePalette()
@@ -134,10 +142,9 @@ public class TilePaletteEditor
         {
             tileTypes = new List<TileType>
             {
-                new TileType { Id = 0, Name = "Empty", IsWalkable = true, HasCollider = false, Color = Color.white },
-                new TileType { Id = 1, Name = "Wall", IsWalkable = false, HasCollider = true, Color = Color.gray },
-                new TileType { Id = 2, Name = "Floor", IsWalkable = true, HasCollider = false, Color = Color.yellow },
-                new TileType { Id = 3, Name = "Spike", IsWalkable = false, HasCollider = true, Color = Color.red }
+                new TileType { Id = 0, Name = "Wall", IsWalkable = false, HasCollider = true, Color = Color.gray },
+                new TileType { Id = 1, Name = "Floor", IsWalkable = true, HasCollider = false, Color = Color.yellow },
+                new TileType { Id = 2, Name = "Spike", IsWalkable = false, HasCollider = true, Color = Color.red }
             };
         }
     }
