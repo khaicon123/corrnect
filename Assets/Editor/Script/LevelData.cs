@@ -80,6 +80,7 @@ public class TileData
     public bool IsWalkable;
     public bool HasCollider;
     public Color TileColor;
+    public UnitType UnitType;
     public Dictionary<string, string> CustomProperties;
 
     public TileData()
@@ -89,6 +90,7 @@ public class TileData
         IsWalkable = true;
         HasCollider = false;
         TileColor = Color.white;
+        UnitType = UnitType.Free;
         CustomProperties = new Dictionary<string, string>();
     }
 
@@ -96,6 +98,7 @@ public class TileData
     {
         X = x;
         Y = y;
+        UnitType = UnitType.Free;
         CustomProperties = new Dictionary<string, string>();
 
         if (useFloorDefaults)

@@ -41,6 +41,8 @@ namespace Corrnect.Swarm
                 UnitType.Horizontal => new Color(0.35f, 0.65f, 0.95f),
                 UnitType.Vertical => new Color(0.9f, 0.4f, 0.55f),
                 UnitType.Free => new Color(0.35f, 0.85f, 0.45f),
+                UnitType.DangerMoving => new Color(0.9f, 0.2f, 0.2f),
+                UnitType.DangerStatic => new Color(0.9f, 0.5f, 0.2f),
                 _ => Color.white
             };
 

@@ -41,6 +41,28 @@ namespace Corrnect.Grid
             return row[x] == '#' ? CellType.Wall : CellType.Floor;
         }
 
+        public IEnumerable<UnitSpawnData> GetDangerSpawnsFromRows()
+        {
+            if (rows == null)
+                yield break;
+
+            for (var y = 0; y < Math.Min(rows.Length, height); y++)
+            {
+                var row = rows[y];
+                if (string.IsNullOrEmpty(row))
+                    continue;
+
+                for (var x = 0; x < Math.Min(row.Length, width); x++)
+                {
+                    var tile = row[x];
+                    if (tile == '!')
+                        yield return new UnitSpawnData { position = new Vector2Int(x, y), unitType = UnitType.DangerMoving };
+                    else if (tile == '*')
+                        yield return new UnitSpawnData { position = new Vector2Int(x, y), unitType = UnitType.DangerStatic };
+                }
+            }
+        }
+
         public void Configure(int mapWidth, int mapHeight, string[] mapRows, GridManager gridMgr, List<UnitSpawnData> spawns)
         {
             width = mapWidth;

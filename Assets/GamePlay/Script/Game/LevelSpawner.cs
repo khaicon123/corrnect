@@ -30,7 +30,10 @@ namespace Corrnect.Game
             ClearGroups();
             gridManager.Initialize(level);
 
-            foreach (var spawn in level.UnitSpawns)
+            var allSpawns = new List<UnitSpawnData>(level.UnitSpawns);
+            allSpawns.AddRange(level.GetDangerSpawnsFromRows());
+
+            foreach (var spawn in allSpawns)
             {
                 if (!gridManager.IsWalkable(spawn.position))
                 {

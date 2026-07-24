@@ -17,8 +17,10 @@ namespace Corrnect.Game
 
         private readonly List<SwarmGroup> _activeGroups = new();
         private bool _isLevelComplete;
+        private bool _isGameOver;
 
         public bool IsLevelComplete => _isLevelComplete;
+        public bool IsGameOver => _isGameOver;
         // Expose level and grid so other systems (camera, UI) can reference them
         public Corrnect.Grid.LevelDefinition CurrentLevelDefinition => levelDefinition;
         public Corrnect.Grid.GridManager Grid => gridManager;
@@ -51,6 +53,7 @@ namespace Corrnect.Game
         public void LoadLevel()
         {
             _isLevelComplete = false;
+            _isGameOver = false;
 
             if (levelDefinition == null)
             {
@@ -63,16 +66,29 @@ namespace Corrnect.Game
             _activeGroups.AddRange(levelSpawner.GetActiveGroupsCopy());
             MergeSystem.MergeGroups(_activeGroups, gridManager);
 
+            if (HazardSystem.HasHazardCollision(_activeGroups, gridManager))
+            {
+                OnGameOver();
+                return;
+            }
+
             if (inputManager != null)
                 inputManager.InputEnabled = true;
         }
 
         private void HandleTurnInput(Direction direction)
         {
-            if (_isLevelComplete || _activeGroups.Count == 0)
+            if (_isLevelComplete || _isGameOver || _activeGroups.Count == 0)
                 return;
 
             MoveSystem.ExecuteTurn(_activeGroups, direction, gridManager);
+
+            if (HazardSystem.HasHazardCollision(_activeGroups, gridManager))
+            {
+                OnGameOver();
+                return;
+            }
+
             MergeSystem.MergeGroups(_activeGroups, gridManager);
 
             if (WinSystem.IsLevelComplete(_activeGroups))
@@ -87,6 +103,16 @@ namespace Corrnect.Game
                 inputManager.InputEnabled = false;
 
             Debug.Log("Level complete! All units merged into one swarm.");
+        }
+
+        private void OnGameOver()
+        {
+            _isGameOver = true;
+
+            if (inputManager != null)
+                inputManager.InputEnabled = false;
+
+            Debug.Log("Game Over!");
         }
 
         private void EnsureReferences()

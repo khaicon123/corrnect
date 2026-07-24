@@ -10,8 +10,12 @@ namespace Corrnect.Grid
         [SerializeField] private Transform wallParent;
         [SerializeField] private GameObject floorPrefab;
         [SerializeField] private GameObject wallPrefab;
+        [SerializeField] private GameObject dangerPrefab;
         [SerializeField] private Sprite floorSprite;
         [SerializeField] private Sprite wallSprite;
+        [SerializeField] private Sprite dangerSprite;
+
+        [SerializeField] private Transform dangerParent;
 
         private LevelDefinition _level;
         private Vector2Int _originOffset;
@@ -44,7 +48,8 @@ namespace Corrnect.Grid
 
         public bool IsWalkable(Vector2Int position)
         {
-            return IsInBounds(position) && GetCell(position) == CellType.Floor;
+            var cell = GetCell(position);
+            return IsInBounds(position) && cell == CellType.Floor;
         }
 
         public Vector3 GridToWorld(Vector2Int gridPosition)
@@ -66,6 +71,7 @@ namespace Corrnect.Grid
         {
             ClearChildren(floorParent);
             ClearChildren(wallParent);
+            ClearChildren(dangerParent);
 
             for (var y = 0; y < Height; y++)
             {
@@ -131,6 +137,9 @@ namespace Corrnect.Grid
 
             if (wallParent == null)
                 wallParent = CreateChildTransform("Walls");
+
+            if (dangerParent == null)
+                dangerParent = CreateChildTransform("DangerTiles");
         }
 
         private Transform CreateChildTransform(string name)

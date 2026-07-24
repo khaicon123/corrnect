@@ -4,6 +4,7 @@ namespace Corrnect.Core
     {
         Floor,
         Wall,
-        Danger
+        DangerMoving,
+        DangerStatic
     }
 }

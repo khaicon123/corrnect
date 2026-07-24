@@ -8,6 +8,8 @@ namespace Corrnect.Core
         Down,
         Horizontal,
         Vertical,
-        Free
+        Free,
+        DangerMoving,
+        DangerStatic
     }
 }

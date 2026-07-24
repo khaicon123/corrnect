@@ -15,6 +15,8 @@ namespace Corrnect.Core
                 UnitType.Horizontal => direction is Direction.Left or Direction.Right,
                 UnitType.Vertical => direction is Direction.Up or Direction.Down,
                 UnitType.Free => true,
+                UnitType.DangerMoving => true,
+                UnitType.DangerStatic => false,
                 _ => false
             };
         }

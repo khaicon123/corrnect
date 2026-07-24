@@ -15,7 +15,17 @@ namespace Corrnect.UI
 
         private void OnGUI()
         {
-            if (gameController == null || !gameController.IsLevelComplete)
+            if (gameController == null)
+                return;
+
+            string message = null;
+
+            if (gameController.IsLevelComplete)
+                message = "You Win!\nAll units merged into one swarm.";
+            else if (gameController.IsGameOver)
+                message = "Game Over!\nA danger object hit your unit.";
+
+            if (string.IsNullOrEmpty(message))
                 return;
 
             const int boxWidth = 320;
@@ -26,7 +36,7 @@ namespace Corrnect.UI
                 boxWidth,
                 boxHeight);
 
-            GUI.Box(rect, "You Win!\nAll units merged into one swarm.");
+            GUI.Box(rect, message);
         }
     }
 }

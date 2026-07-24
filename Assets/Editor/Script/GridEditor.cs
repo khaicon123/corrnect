@@ -1,6 +1,9 @@
+using Corrnect.Core;
+using Corrnect.Grid;
 using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
+using System.Linq;
 
 /// <summary>
 /// Handles grid editing and visualization
@@ -125,7 +128,66 @@ public class GridEditor
 
         EditorGUILayout.EndScrollView();
 
+        DrawSelectedTileInspector();
         HandleDragPaint();
+    }
+
+    private void DrawSelectedTileInspector()
+    {
+        if (editorState.CurrentLevel == null)
+            return;
+
+        if (selectedCellPositions.Count == 0)
+        {
+            EditorGUILayout.HelpBox("Chọn node trong lưới để chỉnh UnitType.", MessageType.Info);
+            return;
+        }
+
+        var selectedUnitTypes = new List<UnitType>();
+        foreach (var position in selectedCellPositions)
+        {
+            TileData tile = editorState.CurrentLevel.GetTile(position.x, position.y);
+            if (tile != null)
+                selectedUnitTypes.Add(tile.UnitType);
+        }
+
+        if (selectedUnitTypes.Count == 0)
+        {
+            EditorGUILayout.HelpBox("Không có ô hợp lệ được chọn.", MessageType.Warning);
+            return;
+        }
+
+        bool mixedTypes = selectedUnitTypes.Distinct().Count() > 1;
+        UnitType currentType = selectedUnitTypes[0];
+
+        EditorGUILayout.LabelField("Unit Type", EditorStyles.boldLabel);
+        if (mixedTypes)
+            EditorGUILayout.HelpBox("Các node đang chọn có UnitType khác nhau. Chọn giá trị mới để áp dụng cho tất cả.", MessageType.Info);
+
+        EditorGUI.BeginChangeCheck();
+        UnitType newType = (UnitType)EditorGUILayout.EnumPopup("Selected Unit Type", currentType);
+        if (EditorGUI.EndChangeCheck())
+        {
+            ApplyUnitTypeToSelection(newType);
+        }
+    }
+
+    private void ApplyUnitTypeToSelection(UnitType unitType)
+    {
+        if (editorState.CurrentLevel == null)
+            return;
+
+        foreach (var position in selectedCellPositions)
+        {
+            TileData tile = editorState.CurrentLevel.GetTile(position.x, position.y);
+            if (tile == null)
+                continue;
+
+            tile.UnitType = unitType;
+        }
+
+        editorState.SaveState();
+        CreateGridInScene();
     }
 
     private void DrawTileButton(TileData tile, int x, int y)
@@ -134,7 +196,7 @@ public class GridEditor
         bool isMultiSelected = selectedCellPositions.Contains(new Vector2Int(x, y));
         GUI.backgroundColor = isMultiSelected ? Color.cyan : (isSelected ? Color.yellow : (tile.IsWalkable ? Color.white : Color.gray));
 
-        string buttonLabel = $"{tile.TileName}\n({x},{y})";
+string buttonLabel = $"{tile.TileName}\n({x},{y})\n{tile.UnitType}";
         Rect tileRect = GUILayoutUtility.GetRect(60, 60);
         bool buttonClicked = GUI.Button(tileRect, buttonLabel);
 
@@ -262,6 +324,7 @@ public class GridEditor
                 tile.IsWalkable = true;
                 tile.HasCollider = false;
                 tile.TileColor = Color.yellow;
+                tile.UnitType = UnitType.Free;
             }
         }
 
@@ -287,6 +350,7 @@ public class GridEditor
                 tile.IsWalkable = true;
                 tile.HasCollider = false;
                 tile.TileColor = Color.white;
+                tile.UnitType = UnitType.Free;
             }
         }
 
@@ -330,7 +394,7 @@ public class GridEditor
             for (int x = 0; x < editorState.CurrentLevel.GridSize.x; x++)
             {
                 TileData tile = editorState.CurrentLevel.GetTile(x, y);
-                GameObject tileObj = new GameObject($"Tile_{x}_{y}");
+                GameObject tileObj = new GameObject($"Tile_{x}_{y}_{tile.UnitType}");
                 tileObj.transform.SetParent(gridParent.transform);
                 tileObj.transform.position = new Vector3(x * editorState.GridSettings.CellSize, y * editorState.GridSettings.CellSize, 0);
                 tileObj.transform.localScale = new Vector3(editorState.GridSettings.CellSize, editorState.GridSettings.CellSize, 1);
@@ -339,6 +403,11 @@ public class GridEditor
                 spriteRenderer.sprite = GetTileSprite();
                 spriteRenderer.color = tile.TileColor;
                 spriteRenderer.sortingOrder = 0;
+
+                var sceneTile = tileObj.AddComponent<SceneGridTile>();
+                sceneTile.GridPosition = new Vector2Int(x, y);
+                sceneTile.UnitType = tile.UnitType;
+                sceneTile.Initialize(spriteRenderer);
 
                 if (tile.HasCollider)
                 {

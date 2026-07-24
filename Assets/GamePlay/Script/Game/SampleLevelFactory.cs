@@ -29,7 +29,8 @@ namespace Corrnect.Game
                     new() { position = new Vector2Int(1, 1), unitType = UnitType.Horizontal },
                     new() { position = new Vector2Int(5, 1), unitType = UnitType.Vertical },
                     new() { position = new Vector2Int(1, 5), unitType = UnitType.Vertical },
-                    new() { position = new Vector2Int(5, 5), unitType = UnitType.Horizontal }
+                    new() { position = new Vector2Int(5, 5), unitType = UnitType.Horizontal },
+                    new() { position = new Vector2Int(3, 3), unitType = UnitType.DangerMoving }
                 });
 
             return level;

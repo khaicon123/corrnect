@@ -13,7 +13,11 @@ namespace Corrnect.Systems
             if (groups.Count < 2)
                 return;
 
-            var mergeClusters = FindMergeClusters(groups, grid);
+            var mergeCandidates = groups.Where(group => !HazardSystem.IsHazard(group)).ToList();
+            if (mergeCandidates.Count < 2)
+                return;
+
+            var mergeClusters = FindMergeClusters(mergeCandidates, grid);
 
             foreach (var cluster in mergeClusters)
             {

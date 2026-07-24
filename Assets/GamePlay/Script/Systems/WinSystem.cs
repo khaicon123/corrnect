@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using System.Linq;
 using Corrnect.Swarm;
+using Corrnect.Grid;
 
 namespace Corrnect.Systems
 {
@@ -7,7 +9,10 @@ namespace Corrnect.Systems
     {
         public static bool IsLevelComplete(IReadOnlyList<SwarmGroup> groups)
         {
-            return groups.Count == 1;
+            if (groups == null)
+                return false;
+
+            return groups.Count(group => !HazardSystem.IsHazard(group)) == 1;
         }
     }
 }
